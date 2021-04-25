@@ -1,0 +1,15 @@
+﻿@inject DigiRega.Client.Auth.ISessionManager SessionManager
+
+<AuthorizeView>
+    <Authorized>
+        @context.User.Identity?.Name
+        @if (context.User.HasClaim(c => c.Type == "ClubName"))
+        {
+            @: (@context.User.FindFirst("ClubName")?.Value)
+        }
+        <button class="nav-link btn btn-link" @onclick="async () => await SessionManager.StopAsync()">Abmelden</button>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/login">Anmelden</a>
+    </NotAuthorized>
+</AuthorizeView>

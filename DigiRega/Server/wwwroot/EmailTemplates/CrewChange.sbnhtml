@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <h3>Ummeldung Startnr. {{ data.bow_number }} in Rennen {{ data.race.number }}</h3>
+        <p>
+            Hallo {{ data.sent_by.first_name }} {{ data.sent_by.last_name }},
+        </p>
+        <p>
+            du hast soeben eine Ummeldung eingestellt für: 
+        </p>
+        <ul>
+            <li>Rennen: {{ data.race.number }} - {{ data.race.name }}</li>
+            <li>Verein: {{ data.club.name }}</li>
+            <li>Startnummer: {{ data.bow_number }}</li>
+        </ul>
+        <p>
+            Folgende Änderungen wurden gemeldet:
+        </p>
+        <ul>
+            {{~ # The tilde is used to remove the blank lines with only control statements. ~}}
+            {{~ for substitution in data.substitutions ~}}
+            <li>
+                {{ substitution.old.first_name }} {{ substitution.old.last_name }} ({{ substitution.old.year_of_birth }})
+                wird ersetzt durch
+                {{ substitution.new.first_name }} {{ substitution.new.last_name }} ({{ substitution.new.year_of_birth }})
+            </li>
+            {{~ end ~}}
+        </ul>
+        <p>
+            Bitte beachte, dass dies nur eine Eingangsbestätigung ist.
+            Deine Ummeldung wird noch bearbeitet.
+        </p>
+        <p>
+            Bis bald!
+        </p>
+    </body>
+</html>

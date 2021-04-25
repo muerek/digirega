@@ -1,0 +1,126 @@
+﻿@page "/login"
+
+@inject NavigationManager Navigation
+@inject DigiRega.Client.Auth.ISessionManager SessionManager
+
+<h1>Anmelden</h1>
+<AuthorizeView>
+    <Authorized>
+        <p>
+            Du bist bereits angemeldet als @(context.User.Identity?.Name).
+        </p>
+        <button class="btn btn-primary" type="button"
+                @onclick="() => Navigation.NavigateTo(returnUrl)">
+            Weiter
+        </button>
+        <button class="btn btn-secondary" type="button"
+                @onclick="async () => await SessionManager.StopAsync()">
+            Abmelden
+        </button>
+    </Authorized>
+
+    <NotAuthorized>
+
+        @if (sessionTimeout)
+        {
+            <div class="row">
+                <div class="col">
+                    <div class="alert alert-info" @onclick="() => sessionTimeout = false">
+                        <strong>Anmeldung abgelaufen.</strong>
+                        Aus Sicherheitsgründen wirst du nach einiger Zeit automatisch abgemeldet.
+                        Bitte melde dich erneut an.
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <h2>Obleute</h2>
+                @if (secretFailed)
+                {
+                    <div class="alert alert-warning" @onclick="() => secretFailed = false">
+                        <strong>Anmeldung fehlgeschlagen.</strong>
+                        Bitte prüfe, ob du den korrekten und vollständigen Zugangslink verwendet hast.
+                        Eventuell musst du den Link von Hand kopieren und im Browser einfügen.
+                    </div>
+                }
+                <p>
+                    Alle Obleute mit Zugriff haben einen persönlichen Zugangslink per E-Mail zugesandt bekommen.
+                    Bitte meldet euch an, indem ihr diesen Link öffnet.
+                </p>
+            </div>
+
+            <div class="col-md-6">
+                <h2>Regattastab</h2>
+                @if (passwordFailed)
+                {
+                    <div class="alert alert-warning" @onclick="() => passwordFailed = false">
+                        <strong>Anmeldung fehlgeschlagen.</strong> Bitte Benutzername und Passwort prüfen.
+                    </div>
+                }
+                <PasswordLoginForm Login="login" ValidSubmitCallback="LoginWithPasswordAsync" />
+            </div>
+
+        </div>
+
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private PasswordLoginDto login = new();
+
+    private bool passwordFailed = false;
+    private bool secretFailed = false;
+    
+    /// <summary>
+    /// Flag to indicate if the user is prompted for re-login after their session expired.
+    /// </summary>
+    private bool sessionTimeout = false;
+
+    /// <summary>
+    /// URL to return to after successful login. Defaults to the home page.
+    /// </summary>
+    private string returnUrl = "/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Navigation.TryGetQueryParameter("returnUrl", out var escapedReturnUrl))
+        {
+            returnUrl = Uri.UnescapeDataString(escapedReturnUrl);
+        }
+
+        if (Navigation.TryGetQueryParameter("secret", out var secret))
+        {
+            await LoginWithSecretAsync(secret);
+        }
+
+        if (Navigation.TryGetQueryParameter("timeout", out var timeout))
+        {
+            // Ignore the value, it just matters if the key is present.
+            sessionTimeout = true;
+        }
+    }
+
+    private async Task LoginWithPasswordAsync()
+    {
+        if (await SessionManager.StartAsync(login))
+        {
+            Navigation.NavigateTo(returnUrl);
+        }
+        else { passwordFailed = true; }
+    }
+
+    private async Task LoginWithSecretAsync(string secret)
+    {
+        var login = new SecretLoginDto() { Secret = secret };
+        if (await SessionManager.StartAsync(login))
+        {
+            Navigation.NavigateTo(returnUrl);
+        }
+        else { secretFailed = true; }
+    }
+
+}

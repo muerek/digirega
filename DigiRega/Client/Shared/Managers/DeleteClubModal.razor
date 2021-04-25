@@ -1,0 +1,59 @@
+﻿@inject IClubService ClubService
+
+@if (club == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <p>
+        Diesen Verein wirklich löschen?
+    </p>
+    <ul>
+        <li>Verein: @club.Name</li>
+    </ul>
+    <p class="text-danger font-weight-bold">
+        Damit werden auch alle zugehörigen Obleute gelöscht!
+    </p>
+    <p>
+        <button type="button" class="btn btn-danger" @onclick="DeleteClubAsync">Löschen</button>
+        <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Abbrechen</button>
+    </p>
+}
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance Modal { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    /// <summary>
+    /// ID of the club to be deleted.
+    /// </summary>
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetClubDto? club = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { club = await ClubService.GetClubAsync(Id); }
+        catch (ServiceException e)
+        {
+            await ErrorHandler.HandleAsync(e);
+            await Modal.CancelAsync();
+        }
+    }
+
+    private async Task DeleteClubAsync()
+    {
+        try
+        {
+            await ClubService.RemoveClubAsync(Id);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+
+        await Modal.CloseAsync();
+    }
+}

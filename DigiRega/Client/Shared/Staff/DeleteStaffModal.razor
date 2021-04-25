@@ -1,0 +1,61 @@
+﻿@inject IStaffService StaffService
+
+@if (staffMember == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <p>
+        Diesen Benutzer wirklich löschen?
+    </p>
+    <ul>
+        <li>Benutzername: @staffMember.Username</li>
+        <li>Rolle: @staffMember.Role</li>
+    </ul>
+    <p>
+        <button type="button" class="btn btn-danger" @onclick="DeleteStaffMemberAsync">Löschen</button>
+        <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Abbrechen</button>
+    </p>
+}
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance Modal { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    /// <summary>
+    /// ID of the staff member to be deleted.
+    /// </summary>
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetStaffMemberDto? staffMember = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load existing data.
+        try
+        {
+            staffMember = await StaffService.GetStaffMemberAsync(Id);
+        }
+        catch (ServiceException e)
+        {
+            await ErrorHandler.HandleAsync(e);
+            await Modal.CancelAsync();
+        }
+    }
+
+    private async Task DeleteStaffMemberAsync()
+    {
+        try
+        {
+            await StaffService.RemoveStaffMemberAsync(Id);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+
+        await Modal.CloseAsync();
+    }
+}

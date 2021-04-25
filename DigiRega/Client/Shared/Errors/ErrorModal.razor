@@ -1,0 +1,20 @@
+﻿<p>
+    Das hat leider nicht funktioniert.
+</p>
+<p class="text-muted">
+    <small>
+        Details: @Exception.GetType()
+    </small><br />
+    @Exception.Message
+</p>
+<p>
+    <button type="button" class="btn btn-primary" @onclick="async () => await Modal.CancelAsync()">Schließen</button>
+</p>
+
+@code {
+    [Parameter]
+    public Exception Exception { get; set; } = new();
+
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+}

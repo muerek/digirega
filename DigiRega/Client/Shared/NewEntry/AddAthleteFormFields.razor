@@ -1,0 +1,34 @@
+﻿@* Note that this does not generate a full form, but just form fields to be used within one. *@
+@* Standalone athlete forms are not needed at the moment. *@
+
+<div class="form-group row">
+    <label for="@IdPrefix-first-name" class="col-sm-3 col-form-label">Vorname</label>
+    <div class="col-sm-9">
+        <InputText @bind-Value="Athlete.FirstName" id="@($"{IdPrefix}-first-name")" class="form-control" />
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="@IdPrefix-last-name" class="col-sm-3 col-form-label">Nachname</label>
+    <div class="col-sm-9">
+        <InputText @bind-Value="Athlete.LastName" id="@($"{IdPrefix}-last-name")" class="form-control" />
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="@IdPrefix-yob" class="col-sm-3 col-form-label">Jahrgang</label>
+    <div class="col-sm-9">
+        <InputNumber @bind-Value="Athlete.YearOfBirth" id="@($"{IdPrefix}-yob")" class="form-control" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public AddAthleteDto Athlete { get; set; } = new();
+
+    /// <summary>
+    /// Prefix for the ID attribute of the generated HTML elements.
+    /// </summary>
+    [Parameter]
+    public string IdPrefix { get; set; } = "athlete";
+}

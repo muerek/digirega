@@ -1,0 +1,40 @@
+﻿@inject IRaceService RaceService
+
+@if (races == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <div class="form-group">
+        <label for="race">Rennen</label>
+        <InputSelect @bind-Value="BoundValue" id="race" class="form-control">
+            <option value="0" disabled>- Bitte auswählen -</option>
+            @foreach (GetRaceDto race in races)
+                {
+                <option value="@race.Id">@race.Number - @race.Name</option>
+                }
+        </InputSelect>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Value { get; set; } = 0;
+
+    [Parameter]
+    public EventCallback<int> ValueChanged { get; set; }
+
+    private int BoundValue
+    {
+        get => Value;
+        set => ValueChanged.InvokeAsync(value);
+    }
+
+    private IList<GetRaceDto>? races = null;
+
+    protected async override Task OnInitializedAsync()
+    {
+        races = await RaceService.GetRacesAsync();
+    }
+}

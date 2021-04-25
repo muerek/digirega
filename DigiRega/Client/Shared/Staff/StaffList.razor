@@ -1,0 +1,34 @@
+﻿<p>
+    <button class="btn btn-secondary" @onclick="ShowAddStaffMemberModal">Mitarbeiter hinzufügen</button>
+</p>
+
+@if (staff == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <TemplatedTable Items="staff">
+        <TableHead>
+            <th>Benutzername</th>
+            <th>Rolle</th>
+            <th>Aktionen</th>
+        </TableHead>
+        <TableRowTemplate Context="staffMember">
+            <tr>
+                <td>@staffMember.Username</td>
+                <td>
+                    @(staffMember.Role == "Staff" ? "Mitarbeiter" : staffMember.Role)
+                </td>
+                <td>
+                    <a href="#!" @onclick="async () => await ShowEditStaffMemberModal(staffMember.Id)" @onclick:preventDefault>
+                        Bearbeiten
+                    </a> |
+                    <a href="#!" @onclick="async () => await ShowDeleteStaffMemberModal(staffMember.Id)" @onclick:preventDefault class="text-danger">
+                        Löschen
+                    </a>
+                </td>
+            </tr>
+        </TableRowTemplate>
+    </TemplatedTable>
+}

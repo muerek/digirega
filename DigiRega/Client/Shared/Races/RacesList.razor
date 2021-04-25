@@ -1,0 +1,27 @@
+﻿<p>
+    <button class="btn btn-secondary" @onclick="async () => await ShowAddRaceModal()">Rennen hinzufügen</button>
+</p>
+
+@if (races == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <TemplatedTable Items="races.OrderBy(r => r.Number).ToList()">
+        <TableHead>
+            <th>Nr.</th>
+            <th>Bezeichnung</th>
+            <th>Aktionen</th>
+        </TableHead>
+        <TableRowTemplate Context="race">
+            <tr>
+                <td>@race.Number</td>
+                <td>@race.Name</td>
+                <td>
+                    <a href="#!" @onclick="async () => await ShowDeleteRaceModal(race.Id)" @onclick:preventDefault class="text-danger">Löschen</a>
+                </td>
+            </tr>
+        </TableRowTemplate>
+    </TemplatedTable>
+}

@@ -1,0 +1,64 @@
+﻿@inject IRaceService RaceService
+
+@if (race == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <p>
+        Dieses Rennen wirklich löschen?
+    </p>
+    <ul>
+        <li>Rennummer: @race.Number</li>
+        <li>Bezeichnung: @race.Name</li>
+    </ul>
+    <p class="text-danger font-weight-bold">
+        Damit werden auch alle Nach-/Um-/Abmeldungen zu diesem Rennen gelöscht!
+    </p>
+    <p>
+        <button type="button" class="btn btn-danger" @onclick="DeleteRaceAsync">Löschen</button>
+        <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Abbrechen</button>
+    </p>
+}
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance Modal { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    /// <summary>
+    /// ID of the race to be deleted.
+    /// </summary>
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetRaceDto? race = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load existing data.
+        try
+        {
+            race = await RaceService.GetRaceAsync(Id);
+        }
+        catch (ServiceException e)
+        {
+            await ErrorHandler.HandleAsync(e);
+            await Modal.CancelAsync();
+        }
+    }
+
+    private async Task DeleteRaceAsync()
+    {
+        try
+        {
+            await RaceService.RemoveRaceAsync(Id);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+
+        await Modal.CloseAsync();
+    }
+}

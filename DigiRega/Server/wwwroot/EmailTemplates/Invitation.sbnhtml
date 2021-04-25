@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Zugangsdaten für DigiRega</title>
+    </head>
+    <body>
+        <h3>Deine Zugangsdaten für DigiRega</h3>
+        <p>
+            Hallo {{ data.first_name }} {{ data.last_name }},
+        </p>
+        <p>
+            am kommenden Wochenende ist wieder Regatta!
+            Wir freuen uns auf dich, zur Sicherheit bleibt das Regattabüro aber kontaktlos.
+            Nachmeldungen, Ummeldungen und Abmeldungen werden wir digital erfassen.
+            Mit dem untenstehenden Link erhältst du Zugang zu unserem digitalen Regattabüro.
+        </p>
+        <p>
+            Falls du für mehrere Vereine verantwortlich bist, erhältst du jeweils separate Links.
+            Dieser ist gültig für: {{ data.club.name }}
+        </p>
+        <p>
+            Dein Zugangslink:
+            <a href="{{ login }}?secret={{ data.secret }}">{{ login }}?secret={{ data.secret }}</a>
+        </p>
+        <p>
+            Dieser Link ist personalisiert und nur für dich.
+            So wissen wir direkt, dass eine Meldung auch tatsächlich von dir kommt.
+            Bitte den Link daher auch nicht an andere weitergeben.
+        </p>
+        <p>
+            Bis bald!
+        </p>
+    </body>
+</html>

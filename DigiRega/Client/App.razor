@@ -1,0 +1,29 @@
+<CascadingAuthenticationState>
+    <ErrorHandler>
+        <CascadingBlazoredModal Animation="ModalAnimation.FadeIn(0.5)">
+            <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
+                <Found Context="routeData">
+                    <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                        <NotAuthorized>
+                            @if (!context.User.Identity?.IsAuthenticated ?? false)
+                            {
+                                @* Not authorized because user has not logged in yet. *@
+                                <RedirectToLogin />
+                            }
+                            else
+                            {
+                                @* Not authorized because the logged-in user is not authorized for this route. *@
+                                <Forbidden403 />
+                            }
+                        </NotAuthorized>
+                    </AuthorizeRouteView>
+                </Found>
+                <NotFound>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        <NotFound404 />
+                    </LayoutView>
+                </NotFound>
+            </Router>
+        </CascadingBlazoredModal>
+    </ErrorHandler>
+</CascadingAuthenticationState>

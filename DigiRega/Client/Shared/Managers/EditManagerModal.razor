@@ -1,0 +1,94 @@
+﻿@inject IManagerService ManagerService
+@inject IClubService ClubService
+
+@if (manager == null || club == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <EditForm Model="update" OnSubmit="UpdateManagerAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="club-name">Vereinsname</label>
+            <input value="@club.Name" class="form-control" id="club-name" disabled />
+        </div>
+
+        <div class="form-group">
+            <label for="first-name">Vorname</label>
+            <InputText @bind-Value="update.FirstName" class="form-control" id="first-name" />
+        </div>
+
+        <div class="form-group">
+            <label for="last-name">Nachname</label>
+            <InputText @bind-Value="update.LastName" class="form-control" id="last-name" />
+        </div>
+
+        <div class="form-group">
+            <label for="email-address">E-Mail-Adresse</label>
+            <InputText @bind-Value="update.EmailAddress" type="email" class="form-control" id="email-address" />
+        </div>
+
+        <div class="form-group form-check">
+            <InputCheckbox @bind-Value="update.SendEmail" class="form-check-input" id="send-email" />
+            <label for="send-email" class="form-check-label">Neue Zugangsdaten per E-Mail zusenden.</label>
+            <small class="form-text text-muted">
+                Die alten Zugangsdaten verlieren ihre Gültigkeit.
+            </small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Abbrechen</button>
+
+    </EditForm>
+}
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance Modal { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    /// <summary>
+    /// ID of the manager to be updated.
+    /// </summary>
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetManagerDto? manager = null;
+    private GetClubDto? club = null;
+    private UpdateManagerDto update = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load existing data.
+        try
+        {
+            manager = await ManagerService.GetManagerAsync(Id);
+            club = await ClubService.GetClubAsync(manager.ClubId);
+
+            update.EmailAddress = manager.EmailAddress;
+            update.FirstName = manager.FirstName;
+            update.LastName = manager.LastName;
+        }
+        catch (ServiceException e)
+        {
+            await ErrorHandler.HandleAsync(e);
+            await Modal.CancelAsync();
+        }
+    }
+
+    private async Task UpdateManagerAsync()
+    {
+        try
+        {
+            await ManagerService.UpdateManagerAsync(Id, update);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+
+        await Modal.CloseAsync();
+    }
+}

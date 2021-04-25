@@ -1,0 +1,80 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="/">DigiRega</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+
+        <AuthorizeView Roles="Staff, Admin">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/entries/new">
+                    <span class="oi oi-inbox" aria-hidden="true"></span> Eingang
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/entries/approved">
+                    <span class="oi oi-fork" aria-hidden="true"></span> Zu bearbeiten
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/entries/done">
+                    <span class="oi oi-folder" aria-hidden="true"></span> Erledigt
+                </NavLink>
+            </li>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Manager">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/entries">
+                    <span class="oi oi-inbox" aria-hidden="true"></span> Meldungen
+                </NavLink>
+            </li>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Manager, Staff, Admin">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/new">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Neue Meldung
+                </NavLink>
+            </li>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Staff, Admin">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/managers">
+                    <span class="oi oi-person" aria-hidden="true"></span> Obleute
+                </NavLink>
+            </li>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Admin">
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/settings">
+                    <span class="oi oi-cog" aria-hidden="true"></span> Einstellungen
+                </NavLink>
+            </li>
+        </AuthorizeView>
+
+    </ul>
+
+</div>
+
+
+@code {
+    /// <summary>
+    /// Flag to show or hide the nav menu items.
+    /// Note that CSS will override this for larger screens.
+    /// </summary>
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+} 

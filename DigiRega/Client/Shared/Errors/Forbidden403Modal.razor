@@ -1,0 +1,11 @@
+﻿<p>
+    DigiRega hat ein Problem festgestellt. Bitte versuche es später noch einmal.
+</p>
+<p>
+    <button type="button" class="btn btn-primary" @onclick="async () => await Modal.CancelAsync()">Schließen</button>
+</p>
+
+@code {
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+}

@@ -1,0 +1,36 @@
+﻿<EditForm Model="Withdrawal" OnValidSubmit="ValidSubmitCallback">
+    <ObjectGraphDataAnnotationsValidator />
+    <ValidationSummary />
+
+    <RaceSelect @bind-Value="Withdrawal.RaceId" />
+
+    <ManagerSelect @bind-ClubId="Withdrawal.ClubId" @bind-ManagerId="Withdrawal.SentById" />
+
+    <div class="form-group row">
+        <label for="bow-number" class="col-sm-3 col-form-label">Startnummer</label>
+        <div class="col-sm-9">
+            <InputNumber @bind-Value="Withdrawal.BowNumber" id="bow-number" class="form-control" />
+        </div>
+    </div>
+
+    <div class="form-group form-check">
+        <InputCheckbox @bind-Value="Withdrawal.SendEmailConfirmation" class="form-check-input" id="send-email" />
+        <label for="send-email" class="form-check-label">Kopie per E-Mail zusenden</label>
+        <small class="form-text text-muted">
+            Eine Kopie der eingegebenen Daten wird als Bestätigung an die hinterlegte E-Mail geschickt.
+        </small>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Absenden</button>
+    </div>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public AddWithdrawalDto Withdrawal { get; set; } = new();
+
+    [Parameter]
+    public EventCallback ValidSubmitCallback { get; set; }
+}

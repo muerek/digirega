@@ -1,0 +1,99 @@
+﻿@inject IStaffService StaffService
+
+@if (staffMember == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <EditForm Model="update" OnValidSubmit="UpdateStaffMemberAsync">
+        <FluentValidationValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="username">Benutzername</label>
+            <input type="text" value="@staffMember.Username" class="form-control" id="username" disabled />
+        </div>
+
+        <div class="form-group">
+            <label for="role">Rolle</label>
+            <InputSelect @bind-Value="update.Role" class="form-control" id="role">
+                <option value="Staff">Mitarbeiter</option>
+                <option value="Admin">Admin</option>
+            </InputSelect>
+        </div>
+
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="update-password" checked="@updatePassword" @onchange="TogglePasswordUpdate" />
+            <label for="update-password" class="form-check-label">Neues Password vergeben</label>
+        </div>
+
+        @if (updatePassword)
+        {
+            <div class="form-group">
+                <label for="password">Neues Password</label>
+                <InputText @bind-Value="update.Password" class="form-control" id="password" />
+            </div>
+        }
+
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Abbrechen</button>
+
+    </EditForm>
+}
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance Modal { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    /// <summary>
+    /// ID of the staff member to be updated.
+    /// </summary>
+    [Parameter]
+    public int Id { get; set; }
+
+    private GetStaffMemberDto? staffMember = null;
+    private UpdateStaffMemberDto update = new();
+
+    // Flag to toggle if password should be updated or not.
+    private bool updatePassword = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load existing data.
+        try
+        {
+            staffMember = await StaffService.GetStaffMemberAsync(Id);
+            update.Role = staffMember.Role;
+        }
+        catch (ServiceException e)
+        {
+            await ErrorHandler.HandleAsync(e);
+            await Modal.CancelAsync();
+        }
+    }
+
+    private async Task UpdateStaffMemberAsync()
+    {
+        try
+        {
+            await StaffService.UpdateStaffMemberAsync(Id, update);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+
+        await Modal.CloseAsync();
+    }
+
+    private void TogglePasswordUpdate(ChangeEventArgs e)
+    {
+        updatePassword = (bool)(e.Value ?? false);
+        // Reset password value in DTO.
+        if (!updatePassword)
+        {
+            update.Password = null;
+        }
+    }
+}

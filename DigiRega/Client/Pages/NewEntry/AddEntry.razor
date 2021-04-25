@@ -1,0 +1,41 @@
+﻿@page "/new"
+@attribute [Authorize(Roles = "Manager, Staff, Admin")]
+
+<h1>Neue Meldung</h1>
+<p>
+    Was möchtest du melden?
+</p>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="card-title">Nachmeldung</h3>
+        <p class="card-text">
+            Nachträglich zu einem Rennen mit freien Startplätzen melden.
+        </p>
+        <a href="/new/late-entry" class="btn btn-primary">Weiter</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="card-title">Ummeldung</h3>
+        <p class="card-text">
+            Steuerleute und bis zur Hälfte der Ruderer bereits gemeldeter Mannschaften austauschen.
+        </p>
+        <a href="/new/crew-change" class="btn btn-primary">Weiter</a>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="card-title">Abmeldung</h3>
+        <p class="card-text">
+            Eine gemeldete Mannschaft wird nicht am Rennen teilnehmen.
+        </p>
+        <a href="/new/withdrawal" class="btn btn-primary">Weiter</a>
+    </div>
+</div>
+
+@code {
+
+}

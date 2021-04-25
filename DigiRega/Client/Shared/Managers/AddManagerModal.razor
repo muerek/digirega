@@ -1,0 +1,72 @@
+﻿@if (clubs == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    <EditForm Model="manager" OnSubmit="TrySubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        @* Select if an existing club should be used or a new club is to be created. *@
+        <InputRadioGroup @bind-Value="newClub">
+            <div class="form-check form-check-inline">
+                <InputRadio Value="0" class="form-check-input" id="existing-club-radio" />
+                <label class="form-check-label" for="existing-club-radio">Bestehender Verein</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <InputRadio Value="1" class="form-check-input" id="new-club" />
+                <label class="form-check-label" for="new-club">Neuen Verein anlegen</label>
+            </div>
+        </InputRadioGroup>
+
+        @if (newClub == 1)
+        {
+            <div class="form-group">
+                <label for="new-club-name">Vereinsname</label>
+                @* Note that there is no proper validation for this field. *@
+                <InputText @bind-Value="newClubName" class="form-control" id="new-club-name" />
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label for="club">Verein</label>
+                <InputSelect @bind-Value="manager.ClubId" class="form-control" id="club">
+                    <option value="0" disabled>- Bitte auswählen -</option>
+                    @foreach (GetClubDto club in clubs.OrderBy(c => c.Name))
+                            {
+                        <option value="@club.Id">@club.Name</option>
+                            }
+                </InputSelect>
+            </div>
+        }
+
+        <div class="form-group">
+            <label for="first-name">Vorname</label>
+            <InputText @bind-Value="manager.FirstName" class="form-control" id="first-name" />
+        </div>
+
+        <div class="form-group">
+            <label for="last-name">Nachname</label>
+            <InputText @bind-Value="manager.LastName" class="form-control" id="last-name" />
+        </div>
+
+        <div class="form-group">
+            <label for="email-address">E-Mail-Adresse</label>
+            <InputText @bind-Value="manager.EmailAddress" type="email" class="form-control" id="email-address" />
+        </div>
+
+        <div class="form-group form-check">
+            <InputCheckbox @bind-Value="manager.SendEmail" class="form-check-input" id="send-email" />
+            <label for="send-email" class="form-check-label">Zugangsdaten zusenden</label>
+            <small class="form-text text-muted">
+                Obleute bekommen Zugangsdaten an die angegebene E-Mail-Adresse geschickt.
+            </small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Abbrechen</button>
+
+    </EditForm>
+}

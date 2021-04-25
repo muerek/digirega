@@ -1,0 +1,35 @@
+﻿<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="float-right">
+            <EntryStatusBadge EntryStatus="Entry.Status" />
+        </h5>
+        <h5 class="card-title">
+            @entryType zu Rennen @Entry.Race.Number
+        </h5>
+        <p>
+            @Entry.Club.Name<br />
+            <small class="text-muted">
+                <span class="oi oi-clock"></span> @Entry.SentAt.ToString("dd.MM. HH:mm")
+            </small>
+        </p>
+        <a href="/entries/@Entry.Id" class="card-link">Details</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public GetEntryBriefDto Entry { get; set; } = new();
+
+    private string entryType = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        entryType = Entry.Type switch
+        {
+            "CrewChange" => "Ummeldung",
+            "LateEntry" => "Nachmeldung",
+            "Withdrawal" => "Abmeldung",
+            _ => "Unvollständige Meldung"
+        };
+    }
+}

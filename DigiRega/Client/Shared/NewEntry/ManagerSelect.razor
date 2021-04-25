@@ -1,0 +1,87 @@
+﻿@inject IManagerService ManagerService
+@inject IClubService ClubService
+
+@* Show selector only for select user roles. *@
+<AuthorizeView Roles="Admin, Staff">
+    @if (clubs == null || managers == null)
+    {
+        <LoadingSpinner />
+    }
+    else
+    {
+        <div class="form-group">
+            <label for="manager">Obmensch</label>
+            <InputSelect @bind-Value="BoundManagerId" class="form-control" id="manager">
+                <option value="" disabled selected>- Bitte auswählen -</option>
+                @foreach (GetClubDto club in clubs)
+                    {
+                    <optgroup label="@club.Name">
+                        @foreach (GetManagerDto manager in managers.Where(m => m.ClubId == club.Id))
+                            {
+                            <option value="@manager.Id">@manager.FirstName @manager.LastName</option>
+                            }
+                    </optgroup>
+                    }
+            </InputSelect>
+        </div>
+    }
+</AuthorizeView>
+
+@code {
+    // Note that this component does not offer any functionality for managers.
+    [CascadingParameter]
+    Task<AuthenticationState> authStateTask { get; set; } = null!;
+
+    [Parameter]
+    public int? ClubId { get; set; } = null;
+
+    [Parameter]
+    public EventCallback<int?> ClubIdChanged { get; set; }
+
+    [Parameter]
+    public int? ManagerId { get; set; } = null;
+
+    [Parameter]
+    public EventCallback<int?> ManagerIdChanged { get; set; }
+
+    private int? BoundManagerId
+    {
+        get => ManagerId;
+        set => ChangeValues(value);
+    }
+
+    private IList<GetClubDto>? clubs = null;
+    private IList<GetManagerDto>? managers = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Access authentication state to read user role.
+        var authState = await authStateTask
+            ?? throw new InvalidOperationException("Could not find authentication state.");
+
+        // For managers, there is nothing to do as the club will be set automatically.
+        if (!authState.User.IsInRole("Manager"))
+        {
+            clubs = await ClubService.GetClubsAsync();
+            managers = await ManagerService.GetManagersAsync();
+        }
+    }
+
+    /// <summary>
+    /// Triggers the event callbacks for all values bound to this component.
+    /// </summary>
+    /// <param name="managerId">Manager ID selected.</param>
+    private void ChangeValues(int? managerId)
+    {
+        if (managers == null)
+        { throw new InvalidOperationException("Manager list must be loaded."); }
+
+        // Get the manager data.
+        var manager = managers.SingleOrDefault(m => m.Id == managerId)
+            ?? throw new InvalidOperationException("Cannot find manager for given manager ID.");
+
+        ClubIdChanged.InvokeAsync(manager.ClubId);
+        ManagerIdChanged.InvokeAsync(manager.Id);
+    }
+
+}

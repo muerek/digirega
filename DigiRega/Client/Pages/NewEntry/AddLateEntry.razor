@@ -1,0 +1,28 @@
+﻿@page "/new/late-entry"
+@attribute [Authorize(Roles = "Manager, Staff, Admin")]
+
+@inject IEntryService EntryService
+@inject NavigationManager Navigation
+
+<h1>Nachmeldung</h1>
+<AddLateEntryForm LateEntry="lateEntry" ValidSubmitCallback="AddLateEntryAsync" />
+
+@code {
+    [CascadingParameter]
+    Task<AuthenticationState> authStateTask { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    private AddLateEntryDto lateEntry = new();
+
+    private async Task AddLateEntryAsync()
+    {
+        try
+        {
+            await EntryService.AddLateEntryAsync(lateEntry);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+        Navigation.NavigateTo("/entries");
+    }
+}

@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  digirega.server:
+    image: ${DOCKER_REGISTRY-}digiregaserver
+    build:
+      context: .
+      dockerfile: DigiRega/Server/Dockerfile
+    environment:
+      - Database__User=${DB_USER}
+      - Database__Password=${DB_PASSWORD}
+      - Emailing__SmtpServer=${SMTP_SERVER}
+      - Emailing__SmtpPort=${SMTP_PORT}
+      - Emailing__User=${SMTP_USER}
+      - Emailing__Password=${SMTP_PASSWORD}
+      - Emailing__FromAddress=${EMAIL_SENDER_ADDRESS}
+      - LoginUrl=${LOGIN_BASEURL}
+      - JwtSigningKey=${JWT_SIGNING_KEY}
+    depends_on:
+      - digirega.db
+
+  digirega.db:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}

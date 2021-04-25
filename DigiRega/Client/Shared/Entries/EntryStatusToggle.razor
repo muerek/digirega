@@ -1,0 +1,71 @@
+﻿@inject IEntryService EntryService
+
+<div class="row mt-3">
+    <div class="col">
+        @if (isBusy)
+        {
+            <LoadingSpinner />
+        }
+        else if (Entry.Status == EntryStatus.New)
+        {
+            <button type="button" class="btn btn-success"
+                    @onclick="async () => await UpdateStatusAsync(EntryStatus.Approved)">
+                Genehmigen
+            </button>
+            <button type="button" class="btn btn-danger"
+                    @onclick="async () => await UpdateStatusAsync(EntryStatus.Rejected)">
+                Ablehnen
+            </button>
+        }
+        else if (Entry.Status == EntryStatus.Approved)
+        {
+            <button type="button" class="btn btn-secondary"
+                    @onclick="async () => await UpdateStatusAsync(EntryStatus.Done)">
+                Als erledigt markieren
+            </button>
+        }
+        @* Reset status option. *@
+        @if (Entry.Status != EntryStatus.New && !isBusy)
+        {
+            @* Whitespace for proper button alignment. *@
+            @(" ")
+            <button type="button" class="btn btn-outline-secondary"
+                    @onclick="async () => await UpdateStatusAsync(EntryStatus.New)">
+                Auf neu zurücksetzen
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+        [CascadingParameter]
+        GetEntryDto Entry { get; set; } = new();
+
+        [CascadingParameter]
+        ErrorHandler ErrorHandler { get; set; } = null!;
+
+        [Parameter]
+        public EventCallback OnStatusChanged { get; set; }
+
+    public bool isBusy = false;
+
+    private async Task UpdateStatusAsync(EntryStatus status)
+    {
+        isBusy = true;
+
+        try
+        {
+            await EntryService.UpdateEntryStatusAsync(Entry.Id, status);
+            Entry.Status = status;
+            await OnStatusChanged.InvokeAsync();
+        }
+        catch (ServiceException e)
+        {
+            await ErrorHandler.HandleAsync(e);
+        }
+        finally
+        {
+            isBusy = false;
+        }
+    }
+}

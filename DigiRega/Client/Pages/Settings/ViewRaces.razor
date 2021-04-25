@@ -1,0 +1,9 @@
+﻿@page "/settings/races"
+@attribute [Authorize(Roles = "Staff, Admin")]
+
+<h1>Rennen</h1>
+<p>
+    Meldungen können nur für die vorgegebenen Rennen eingestellt werden. Diese Liste sollte vor Regattabeginn vollständig sein.
+</p>
+
+<RacesList />

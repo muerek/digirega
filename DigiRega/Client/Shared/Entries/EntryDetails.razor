@@ -1,0 +1,73 @@
+﻿<div class="card">
+    <div class="card-body">
+        <h5 class="float-right">
+            <EntryStatusBadge EntryStatus="Entry.Status" />
+        </h5>
+        <h5 class="card-title">
+            @entryType zu Rennen @Entry.Race.Number - @Entry.Race.Name
+        </h5>
+        <p>
+            @Entry.Club.Name<br />
+            <span class="text-muted">
+                @Entry.SentBy.FirstName @Entry.SentBy.LastName
+            </span>
+        </p>
+        <p class="card-text text-muted">
+            <span class="oi oi-clock"></span> @Entry.SentAt.ToString("dd.MM. HH:mm")
+        </p>
+        @if (Entry is GetCrewChangeDto crewChange)
+        {
+            <p class="card-text">
+                <b>Startnummer @crewChange.BowNumber</b> wird umgemeldet wie folgt:
+            </p>
+            <ul>
+                @foreach (GetSubstitutionDto substitution in crewChange.Substitutions)
+                {
+                    <li>
+                        @substitution.Old.FirstName @substitution.Old.LastName (@substitution.Old.YearOfBirth)
+                        wird ersetzt durch
+                        @substitution.New.FirstName @substitution.New.LastName (@substitution.New.YearOfBirth)
+                    </li>
+                }
+            </ul>
+        }
+        else if (Entry is GetLateEntryDto lateEntry)
+        {
+            <p class="card-text">
+                Nachgemeldet wird:
+            </p>
+            <ul>
+                @foreach (GetCrewMemberDto crewMember in lateEntry.Crew)
+                {
+                    <li>
+                        @crewMember.Position: @crewMember.Athlete.FirstName @crewMember.Athlete.LastName (@crewMember.Athlete.YearOfBirth)
+                    </li>
+                }
+            </ul>
+        }
+        else if (Entry is GetWithdrawalDto withdrawal)
+        {
+            <p class="card-text">
+                <b>Startnummer @withdrawal.BowNumber</b> startet nicht.
+            </p>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public GetEntryDto Entry { get; set; } = new();
+
+    private string entryType = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        entryType = Entry switch
+        {
+            GetCrewChangeDto => "Ummeldung",
+            GetLateEntryDto => "Nachmeldung",
+            GetWithdrawalDto => "Abmeldung",
+            _ => "Unvollständige Meldung"
+        };
+    }
+}

@@ -1,0 +1,46 @@
+﻿@typeparam TItem
+
+@if (Items.Count > 0 && TableRowTemplate != null)
+{
+    <table class="table">
+        @if (TableHead != null)
+        {
+            <thead>
+                <tr>@TableHead</tr>
+            </thead>
+        }
+        <tbody>
+            <Virtualize Context="item" Items="Items">
+                @TableRowTemplate(item)
+            </Virtualize>
+        </tbody>
+    </table>
+}
+
+@if (Items.Count == 0)
+{
+    @* TODO: Would like to make this part of the table, but for that I would need to know the number of columns to set colspan. *@
+    <p>
+        Hm, nichts hier...
+    </p>
+}
+
+
+@code {
+    // Note to myself: The Virtualize component needs a ICollection, so we cannot use IEnumerable here.
+    [Parameter]
+    public ICollection<TItem> Items { get; set; } = null!;
+
+    /// <summary>
+    /// The table headers to be shown. Do not nest in a <c>&lt;tr&gt;</c>, just use <c>&lt;th&gt;</c>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? TableHead { get; set; } = null;
+
+    /// <summary>
+    /// Template for a single data item. As a single item may span multiple rows, you have to include <c>&lt;tr&gt;</c> tags.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<TItem> TableRowTemplate { get; set; } = null!;
+
+}

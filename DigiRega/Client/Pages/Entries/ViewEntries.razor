@@ -1,0 +1,61 @@
+﻿@page "/entries"
+@attribute [Authorize(Roles = "Manager, Staff, Admin")]
+
+@inject IEntryService EntryService
+@inject NavigationManager Navigation
+
+<h1>Meldungen</h1>
+<p>
+    Übersicht über alle von deinem Verein eingereichten Meldungen.
+</p>
+<p>
+    <button type="button" class="btn btn-primary" @onclick="async () => { entries = null; await LoadDataAsync(); }">Aktualisieren</button>
+</p>
+
+@if (entries == null)
+{
+    <LoadingSpinner />
+}
+else if (entries.Count == 0)
+{
+    <div class="alert alert-info">
+        Noch keine Meldungen eingereicht.
+    </div>
+}
+else
+{
+    <Virtualize Items="entries" Context="entry">
+        <EntrySummary Entry="entry" @key="entry.Id" />
+    </Virtualize>
+}
+
+
+@code {
+    [CascadingParameter]
+    Task<AuthenticationState> authStateTask { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    private IList<GetEntryBriefDto>? entries = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Admins and staff should be redirected to the entry inbox.
+        // Access authentication state to read user role.
+        var authState = await authStateTask ?? throw new Exception("Could not find authentication state.");
+        if (authState.User.IsInRole("Admin") || authState.User.IsInRole("Staff"))
+        {
+            Navigation.NavigateTo("/entries/new");
+        }
+
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try { entries = await EntryService.GetEntriesAsync(); }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+    }
+
+}

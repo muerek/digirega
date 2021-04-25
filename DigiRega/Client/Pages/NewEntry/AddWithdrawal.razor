@@ -1,0 +1,26 @@
+﻿@page "/new/withdrawal"
+@attribute [Authorize(Roles = "Manager, Staff, Admin")]
+
+@inject IEntryService EntryService
+@inject NavigationManager Navigation
+
+<h1>Abmeldung</h1>
+<AddWithdrawalForm Withdrawal="withdrawal" ValidSubmitCallback="AddWithdrawalAsync" />
+
+@code {
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    private AddWithdrawalDto withdrawal = new();
+
+    private async Task AddWithdrawalAsync()
+    {
+        try
+        {
+            await EntryService.AddWithdrawalAsync(withdrawal);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+
+        Navigation.NavigateTo("/entries");
+    }
+}

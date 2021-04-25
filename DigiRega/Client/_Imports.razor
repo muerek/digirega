@@ -1,0 +1,38 @@
+﻿@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+
+@using Blazored.Modal
+@using Blazored.Modal.Services
+@using Blazored.FluentValidation
+
+@using DigiRega.Client
+@using DigiRega.Client.Services
+@using DigiRega.Client.Services.Exceptions
+@using DigiRega.Client.Utilities
+@using DigiRega.Client.Shared
+@using DigiRega.Client.Shared.Entries
+@using DigiRega.Client.Shared.NewEntry
+@using DigiRega.Client.Shared.Templates
+@using DigiRega.Client.Shared.Errors
+@using DigiRega.Client.Shared.Auth
+@using DigiRega.Client.Shared.Managers
+@using DigiRega.Client.Shared.Staff
+@using DigiRega.Client.Shared.Races
+
+@using DigiRega.Shared
+@using DigiRega.Shared.Definitions
+@using DigiRega.Shared.Dto
+@using DigiRega.Shared.Dto.Club
+@using DigiRega.Shared.Dto.Entry
+@using DigiRega.Shared.Dto.Manager
+@using DigiRega.Shared.Dto.Race
+@using DigiRega.Shared.Dto.Auth
+@using DigiRega.Shared.Dto.StaffMember

@@ -1,0 +1,21 @@
+﻿<span class="badge badge-@cssColor">@status</span>
+
+@code {
+    [Parameter]
+    public EntryStatus EntryStatus { get; set; }
+
+    private string status = string.Empty;
+    private string cssColor = "dark";
+
+    protected override void OnParametersSet()
+    {
+        (status, cssColor) = EntryStatus switch
+        {
+            EntryStatus.New => ("Neu", "primary"),
+            EntryStatus.Approved => ("Genehmigt", "success"),
+            EntryStatus.Done => ("Erledigt", "secondary"),
+            EntryStatus.Rejected => ("Abgelehnt", "danger"),
+            _ => ("Unbekannt", "dark")
+        };
+    }
+}

@@ -1,0 +1,38 @@
+﻿<p>
+    <button class="btn btn-secondary" @onclick="ShowAddManagerModal">Obmensch hinzufügen</button>
+</p>
+
+@if (clubs == null || managers == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+    @foreach (GetClubDto club in clubs.OrderBy(c => c.Name))
+    {
+        <div class="row">
+            <div class="col">
+                @* Button before heading so the float is working correctly. *@
+                <button class="btn-sm btn-outline-danger float-right" @onclick="async () => await ShowDeleteClubModal(club.Id)">Löschen</button>
+                <h5>@club.Name</h5>
+            </div>
+        </div>
+        
+        <TemplatedTable Items="managers.Where(m => m.ClubId == club.Id).OrderBy(m => m.LastName).ToList()">
+            <TableRowTemplate Context="manager">
+                <tr>
+                    <td>@manager.FirstName @manager.LastName</td>
+                    <td><a href="mailto:@manager.EmailAddress">@manager.EmailAddress</a></td>
+                    <td>
+                        <a href="#!" @onclick="async () => await ShowEditManagerModal(manager.Id)" @onclick:preventDefault>
+                            Bearbeiten
+                        </a> |
+                        <a href="#!" @onclick="async () => await ShowDeleteManagerModal(manager.Id)" @onclick:preventDefault class="text-danger">
+                            Löschen
+                        </a>
+                    </td>
+                </tr>
+            </TableRowTemplate>
+        </TemplatedTable>
+    }
+}

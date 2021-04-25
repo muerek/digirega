@@ -1,0 +1,41 @@
+﻿@inject IRaceService RaceService
+
+<EditForm Model="race" OnValidSubmit="AddRaceAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="race-number">Rennnummer</label>
+        <InputText @bind-Value="race.Number" class="form-control" id="race-number" />
+    </div>
+
+    <div class="form-group">
+        <label for="short-name">Bezeichnung</label>
+        <InputText @bind-Value="race.Name" class="form-control" id="short-name" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Speichern</button>
+    <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Abbrechen</button>
+
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance Modal { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    private AddRaceDto race = new();
+
+    private async Task AddRaceAsync()
+    {
+        try
+        {
+            await RaceService.AddRaceAsync(race);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+
+        await Modal.CloseAsync();
+    }
+}

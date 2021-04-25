@@ -1,0 +1,49 @@
+﻿@inject IStaffService StaffService
+
+<EditForm Model="staffMember" OnValidSubmit="AddStaffMemberAsync">
+    <FluentValidationValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="username">Benutzername</label>
+        <InputText @bind-Value="staffMember.Username" class="form-control" id="username" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputText @bind-Value="staffMember.Password" class="form-control" id="password" />
+    </div>
+
+    <div class="form-group">
+        <label for="role">Rolle</label>
+        <InputSelect @bind-Value="staffMember.Role" class="form-control" id="role">
+            <option value="Staff">Mitarbeiter</option>
+            <option value="Admin">Admin</option>
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Speichern</button>
+    <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Abbrechen</button>
+
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance Modal { get; set; } = null!;
+
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    private AddStaffMemberDto staffMember = new();
+
+    private async Task AddStaffMemberAsync()
+    {
+        try
+        {
+            await StaffService.AddStaffMemberAsync(staffMember);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+
+        await Modal.CloseAsync();
+    }
+}

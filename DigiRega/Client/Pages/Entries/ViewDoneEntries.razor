@@ -1,0 +1,59 @@
+﻿@page "/entries/done"
+@attribute [Authorize(Roles = "Staff, Admin")]
+
+@inject IEntryService EntryService
+
+<h1>Erledigt</h1>
+<p>
+    Diese Meldungen wurden genehmigt und bearbeitet oder abgelehnt.
+</p>
+<p>
+    <button type="button" class="btn btn-primary" @onclick="async () => { entries = null; await LoadDataAsync(); }">Aktualisieren</button>
+</p>
+
+@if (entries == null)
+{
+    <LoadingSpinner />
+}
+else if (entries.Count == 0)
+{
+    <div class="alert alert-info">
+        Noch keine Meldungen erledigt.
+    </div>
+}
+else
+{
+    <Virtualize Items="entries" Context="entry">
+        <EntrySummary Entry="entry" @key="entry.Id" />
+    </Virtualize>
+}
+
+
+@code {
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    private IList<GetEntryBriefDto>? entries = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            // Showing both done and rejected entries here, we need to fetch both.
+            // Do so in parallel by starting both tasks first, then awaiting results.
+            var doneTask = EntryService.GetEntriesAsync(EntryStatus.Done);
+            var rejectedTask = EntryService.GetEntriesAsync(EntryStatus.Rejected);
+            (var done, var rejected) = (await doneTask, await rejectedTask);
+
+            // Combine results into one list for displaying and restore ordering.
+            entries = done.Concat(rejected).OrderByDescending(e => e.SentAt).ToList();
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+    }
+
+}

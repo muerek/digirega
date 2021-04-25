@@ -1,0 +1,49 @@
+﻿@page "/entries/approved"
+@attribute [Authorize(Roles = "Staff, Admin")]
+
+@inject IEntryService EntryService
+
+<h1>Zu bearbeiten</h1>
+<p>
+    Diese Meldungen wurden genehmigt und können in die Startlisten übernommen werden.
+</p>
+<p>
+    <button type="button" class="btn btn-primary" @onclick="async () => { entries = null; await LoadDataAsync(); }">Aktualisieren</button>
+</p>
+
+@if (entries == null)
+{
+    <LoadingSpinner />
+}
+else if (entries.Count == 0)
+{
+    <div class="alert alert-info">
+        Noch keine Meldungen vorliegend.
+    </div>
+}
+else
+{
+    <Virtualize Items="entries" Context="entry">
+        <EntrySummary Entry="entry" @key="entry.Id" />
+    </Virtualize>
+}
+
+
+@code {
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    private IList<GetEntryBriefDto>? entries = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try { entries = await EntryService.GetEntriesAsync(EntryStatus.Approved); }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+    }
+
+}

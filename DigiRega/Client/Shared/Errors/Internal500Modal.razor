@@ -1,0 +1,22 @@
+﻿@inject NavigationManager Navigation
+@inject DigiRega.Client.Auth.ISessionManager SessionManager
+
+<p>
+    Du hast hier leider keinen Zugriff.
+    Hast du dich vielleicht mit dem falschen Konto angemeldet?
+</p>
+<p>
+    <button type="button" class="btn btn-secondary" @onclick="async () => await Modal.CancelAsync()">Schließen</button>
+    <button type="button" class="btn btn-primary" @onclick="LoginAgainAsync">Neu anmelden</button>
+</p>
+
+@code {
+    [CascadingParameter]
+    public BlazoredModalInstance Modal { get; set; } = null!;
+
+    private async Task LoginAgainAsync()
+    {
+        await SessionManager.StopAsync();
+        Navigation.NavigateToWithQueryString("/login", new() { ["returnUrl"] = Navigation.Uri });
+    }
+}

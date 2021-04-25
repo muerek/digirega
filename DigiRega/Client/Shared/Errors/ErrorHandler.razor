@@ -1,0 +1,55 @@
+﻿@using Microsoft.Extensions.Logging
+@using System.Net
+
+@inject ILogger<ErrorHandler> Logger
+@inject NavigationManager Navigation
+@inject DigiRega.Client.Auth.ISessionManager SessionManager
+@* Use injection and not the cascading parameter here. *@
+@* Cascading parameter is not available yet, see App.razor. *@
+@inject IModalService ModalService
+
+<CascadingValue Value=this>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    /// <summary>
+    /// Performs a default action for handling the error presented by the given <see cref="Exception"/>.
+    /// </summary>
+    /// <param name="exception"><see cref="Exception"/> describing the error.</param>
+    /// <returns></returns>
+    public async Task HandleAsync(Exception exception)
+    {
+        // Always log to console.
+        Logger.LogError("Something went wrong: {Type} - {Message}", exception.GetType(), exception.Message);
+
+        switch (exception)
+        {
+            // For unauthorized access, force a relogin. Most probably the session timed out.
+            case UnauthorizedServiceException:
+                await SessionManager.StopAsync();
+                Navigation.NavigateToWithQueryString("/login", new() { ["returnUrl"] = Navigation.Uri, ["timeout"] = "1" });
+                break;
+
+            // For forbidden access, show an explanation.
+            case ForbiddenServiceException:
+                ModalService.Show<Forbidden403Modal>("Fehler 403");
+                break;
+
+            // For server-side failure, show an explanation.
+            case ServerServiceException:
+                ModalService.Show<Internal500Modal>("Server-Fehler");
+                break;
+
+            // For all other exceptions, just show the exception itself.
+            default:
+                var parameters = new ModalParameters();
+                parameters.Add(nameof(ErrorModal.Exception), exception);
+                ModalService.Show<ErrorModal>("Fehler", parameters);
+                break;
+        }
+    }
+}

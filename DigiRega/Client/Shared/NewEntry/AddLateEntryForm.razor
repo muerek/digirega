@@ -1,0 +1,74 @@
+﻿<EditForm Model="LateEntry" OnValidSubmit="ValidSubmitCallback">
+    <ObjectGraphDataAnnotationsValidator />
+    <ValidationSummary />
+
+    <RaceSelect @bind-Value="LateEntry.RaceId" />
+
+    <ManagerSelect @bind-ClubId="LateEntry.ClubId" @bind-ManagerId="LateEntry.SentById" />
+
+    <h3>Mannschaft</h3>
+
+    @for (int i = 0; i < LateEntry.Crew.Count; i++)
+    {
+        AddCrewMemberDto crewMember = LateEntry.Crew[i];
+
+        <div class="card form-group">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>@(crewMember.Position == 0 ? "Steuer" : $"Position {crewMember.Position}")</span>
+                <button @onclick="() => LateEntry.Crew.Remove(crewMember)"
+                        type="button" class="btn-sm btn-outline-danger">
+                    Löschen
+                </button>
+            </div>
+
+            <div class="card-body">
+                <div class="form-group row">
+                    <label for="@i-position" class="col-sm-3 col-form-label">Position</label>
+                    <div class="col-sm-9">
+                        @* This pre-selected list of values works for U15 regattas as there is no eight. *@
+                        <InputSelect @bind-Value="crewMember.Position" id="@($"{i}-position")" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="0">Steuer</option>
+                        </InputSelect>
+                    </div>
+                </div>
+
+                <AddAthleteFormFields Athlete="crewMember.Athlete" IdPrefix="@i.ToString()" />
+            </div>
+
+        </div>
+
+    }
+
+    <div class="form-group">
+        <button @onclick="() =>LateEntry.Crew.Add(new AddCrewMemberDto())"
+                type="button" class="btn btn-secondary btn-block">
+            Sportler hinzufügen
+        </button>
+    </div>
+
+    <div class="form-group form-check">
+        <InputCheckbox @bind-Value="LateEntry.SendEmailConfirmation" class="form-check-input" id="send-email" />
+        <label for="send-email" class="form-check-label">Kopie per E-Mail zusenden</label>
+        <small class="form-text text-muted">
+            Eine Kopie der eingegebenen Daten wird als Bestätigung an die hinterlegte E-Mail geschickt.
+        </small>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Absenden</button>
+    </div>
+
+</EditForm>
+
+@code {
+    [Parameter]
+    public AddLateEntryDto LateEntry { get; set; } = new();
+
+    [Parameter]
+    public EventCallback ValidSubmitCallback { get; set; }
+}

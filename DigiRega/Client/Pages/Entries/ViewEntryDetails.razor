@@ -1,0 +1,41 @@
+﻿@page "/entries/{EntryId:int}"
+@attribute [Authorize(Roles = "Manager, Staff, Admin")]
+
+@inject IEntryService EntryService
+
+
+<h1>Meldungsdetails</h1>
+
+@if (entry == null)
+{
+    <LoadingSpinner />
+}
+else
+{
+<CascadingValue Value="entry">
+    
+    <EntryDetails />
+
+    <AuthorizeView Roles="Admin, Staff">
+        <EntryStatusToggle OnStatusChanged="async () => await InvokeAsync(StateHasChanged)" />
+    </AuthorizeView>
+
+</CascadingValue>
+    
+}
+
+@code {
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    [Parameter]
+    public int EntryId { get; set; }
+
+    private GetEntryDto? entry;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { entry = await EntryService.GetEntryAsync(EntryId); }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); }
+    }
+}

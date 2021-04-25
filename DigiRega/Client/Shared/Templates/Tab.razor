@@ -1,0 +1,32 @@
+﻿<li class="nav-item">
+    <a class="nav-link @IsActive" href="#!" @onclick="ActivateTab" @onclick:preventDefault>
+        @Title
+    </a>
+</li>
+
+
+@code {
+    [CascadingParameter]
+    public TabSet Container { get; set; } = null!;
+
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Route { get; set; } = null;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    private string? IsActive => Container.ActiveTab == this ? "active" : null;
+
+    protected override void OnInitialized()
+    {
+        Container.AddTab(this);
+    }
+
+    private void ActivateTab()
+    {
+        Container.SetActiveTab(this);
+    }
+}

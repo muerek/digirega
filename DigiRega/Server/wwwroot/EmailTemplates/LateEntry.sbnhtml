@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <h3>Nachmeldung in Rennen {{ data.race.number }}</h3>
+        <p>
+            Hallo {{ data.sent_by.first_name }} {{ data.sent_by.last_name }},
+        </p>
+        <p>
+            du hast soeben eine Nachmeldung eingestellt für: 
+        </p>
+        <ul>
+            <li>Rennen: {{ data.race.number }} - {{ data.race.name }}</li>
+            <li>Verein: {{ data.club.name }}</li>
+        </ul>
+        <p>
+            Folgende Mannschaft wurde gemeldet:
+        </p>
+        <ul>
+            {{~ # The tilde is used to remove the blank lines with only control statements. ~}}
+            {{~ for crew_member in data.crew ~}}
+            <li>
+                {{ crew_member.position == 0 ? "Steuer" : crew_member.position }}:
+                {{ crew_member.athlete.first_name }} {{ crew_member.athlete.last_name }} ({{ crew_member.athlete.year_of_birth }})
+            </li>
+            {{~ end ~}}
+        </ul>
+        <p>
+            Bitte beachte, dass dies nur eine Eingangsbestätigung ist.
+            Deine Nachmeldung wird noch bearbeitet.
+        </p>
+        <p>
+            Bis bald!
+        </p>
+    </body>
+</html>

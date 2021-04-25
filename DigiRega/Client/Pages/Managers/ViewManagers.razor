@@ -1,0 +1,10 @@
+﻿@page "/managers"
+@attribute [Authorize(Roles = "Staff, Admin")]
+
+<h1>Obleute</h1>
+<p>
+    Um Meldungen in DigiRega einstellen zu können, müssen Obleute hier hinzugefügt werden.
+    Für den Zugang bekommen sie einen geheimen Link per Mail zugeschickt, sodass kein Passwort notwendig ist.
+</p>
+
+<ManagersList />

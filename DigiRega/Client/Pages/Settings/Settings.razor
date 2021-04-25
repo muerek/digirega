@@ -1,0 +1,25 @@
+﻿@page "/settings"
+@attribute [Authorize(Roles = "Admin")]
+
+<h1>Einstellungen</h1>
+
+<h3>Rennen</h3>
+<p>
+    Meldungen können nur für die vorgegebenen Rennen eingestellt werden. Diese Liste sollte vor Regattabeginn vollständig sein.
+</p>
+<p>
+    <a href="/settings/races" class="btn btn-secondary">Rennen verwalten</a>
+</p>
+
+<h3>Regattastab</h3>
+<p>
+    Benutzerkonten, mit denen der Regattastab auf DigiRega zugreifen kann.
+    Mitarbeiter können Meldungen und Obleute verwalten.
+    Admins haben Vollzugriff.
+</p>
+
+<StaffList />
+
+@code {
+
+}

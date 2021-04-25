@@ -1,0 +1,21 @@
+﻿@inject NavigationManager Navigation
+@inject DigiRega.Client.Auth.ISessionManager SessionManager
+
+<h2><span class="badge badge-danger text-monospace">403</span> Fehler</h2>
+<p>
+    Du hast hier leider keinen Zugriff.
+    Hast du dich vielleicht mit dem falschen Konto angemeldet?
+</p>
+<p>
+    @* Javascript event handler as Blazor does not provide an easy way to go back. *@
+    <button type="button" class="btn btn-secondary" onclick="window.history.back()">Zurück</button>
+    <button type="button" class="btn btn-primary" @onclick="LoginAgainAsync">Neu anmelden</button>
+</p>
+
+@code {
+    private async Task LoginAgainAsync()
+    {
+        await SessionManager.StopAsync();
+        Navigation.NavigateToWithQueryString("/login", new() { ["returnUrl"] = Navigation.Uri });
+    }
+}

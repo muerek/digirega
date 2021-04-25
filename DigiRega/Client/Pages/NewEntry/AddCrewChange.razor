@@ -1,0 +1,27 @@
+﻿@page "/new/crew-change"
+@attribute [Authorize(Roles = "Manager, Staff, Admin")]
+
+@inject IEntryService EntryService
+@inject NavigationManager Navigation
+
+<h1>Ummeldung</h1>
+
+<AddCrewChangeForm CrewChange="crewChange" ValidSubmitCallback="AddCrewChangeAsync" />
+
+@code {
+    [CascadingParameter]
+    ErrorHandler ErrorHandler { get; set; } = null!;
+
+    private AddCrewChangeDto crewChange = new();
+
+    private async Task AddCrewChangeAsync()
+    {
+        try
+        {
+            await EntryService.AddCrewChangeAsync(crewChange);
+        }
+        catch (ServiceException e) { await ErrorHandler.HandleAsync(e); };
+        
+        Navigation.NavigateTo("/entries");
+    }
+}

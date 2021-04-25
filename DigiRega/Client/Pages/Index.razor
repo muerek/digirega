@@ -1,0 +1,16 @@
+﻿@page "/"
+
+<AuthorizeView>
+    <Authorized>
+        <h1>
+            Hallo @context.User.Identity?.Name
+        </h1>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Hallo</h1>
+        <p>
+            Bitte melde dich an, um auf DigiRega zuzugreifen.
+        </p>
+        <a href="/login" class="btn btn-primary">Zur Anmeldung</a>
+    </NotAuthorized>
+</AuthorizeView>

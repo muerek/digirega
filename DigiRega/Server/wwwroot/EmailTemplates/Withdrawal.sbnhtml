@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <h3>Abmeldung Startnr. {{ data.bow_number }} in Rennen {{ data.race.number }}</h3>
+        <p>
+            Hallo {{ data.sent_by.first_name }} {{ data.sent_by.last_name }},
+        </p>
+        <p>
+            du hast soeben eine Abmeldung eingestellt: 
+        </p>
+        <ul>
+            <li>Rennen: {{ data.race.number }} - {{ data.race.name }}</li>
+            <li>Verein: {{ data.club.name }}</li>
+            <li>Startnummer: {{ data.bow_number }}</li>
+        </ul>
+        <p>
+            Bitte beachte, dass dies nur eine Eingangsbestätigung ist.
+            Deine Abmeldung wird noch bearbeitet.
+        </p>
+        <p>
+            Bis bald!
+        </p>
+    </body>
+</html>
