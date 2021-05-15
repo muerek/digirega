@@ -18,12 +18,12 @@ namespace DigiRega.Server.Model
         /// <summary>
         /// Time this message was enqueued.
         /// </summary>
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
 
         /// <summary>
         /// Time this message was sent successfully. Null if message has not been sent.
         /// </summary>
-        public DateTime? SentAt { get; set; } = null;
+        public DateTimeOffset? SentAt { get; set; } = null;
 
         /// <summary>
         /// Priority for processing. Set higher values to increase priority.

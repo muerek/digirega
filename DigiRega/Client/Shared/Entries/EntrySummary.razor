@@ -9,7 +9,7 @@
         <p>
             @Entry.Club.Name<br />
             <small class="text-muted">
-                <span class="oi oi-clock"></span> @Entry.SentAt.ToString("dd.MM. HH:mm")
+                <span class="oi oi-clock"></span> @Entry.SentAt.ToLocalTime().ToString("dd.MM. HH:mm")
             </small>
         </p>
         <a href="/entries/@Entry.Id" class="card-link">Details</a>
