@@ -188,7 +188,7 @@ namespace DigiRega.Server.Services
             var entry = mapper.Map<TEntry>(dto);
             
             // Set metadata for new entries.
-            entry.SentAt = DateTime.Now;
+            entry.SentAt = DateTimeOffset.Now;
             entry.Status = EntryStatus.New;
 
             return entry;

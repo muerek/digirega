@@ -16,7 +16,7 @@ namespace DigiRega.Server.Model
         /// <summary>
         /// Time the entry was sent to the OC.
         /// </summary>
-        public DateTime SentAt { get; set; } = DateTime.Now;
+        public DateTimeOffset SentAt { get; set; } = DateTimeOffset.Now;
 
         /// <summary>
         /// Manager responsible of this entry.

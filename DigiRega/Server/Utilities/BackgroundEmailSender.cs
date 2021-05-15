@@ -87,7 +87,7 @@ namespace DigiRega.Server.Utilities
                     logger.LogDebug("Successfully sent message {Id}.", message.Id);
 
                     // Flag the message as sent and update the sent timestamp.
-                    message.SentAt = DateTime.Now;
+                    message.SentAt = DateTimeOffset.Now;
                     message.Status = EmailStatus.Sent;
                 }
                 catch (Exception e)

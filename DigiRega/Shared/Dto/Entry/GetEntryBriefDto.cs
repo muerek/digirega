@@ -17,7 +17,7 @@ namespace DigiRega.Shared.Dto.Entry
         /// <summary>
         /// Time the entry was sent to the OC.
         /// </summary>
-        public DateTime SentAt { get; set; } = DateTime.Now;
+        public DateTimeOffset SentAt { get; set; } = DateTimeOffset.Now;
 
         /// <summary>
         /// Entry status in the processing workflow.
